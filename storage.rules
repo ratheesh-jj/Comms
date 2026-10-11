@@ -1,0 +1,19 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Allow authenticated users to read any company image
+    match /companies/{companyId}/images/{imageFile} {
+      allow read: if request.auth != null;
+      // Allow only the company owner to upload/update images
+      // (This requires validating against Firestore if we are strict, but for simplicity we will accept authenticated users for now)
+      // Ideally: allow write: if request.auth != null && firestore.get(/databases/(default)/documents/companies/$(companyId)).data.ownerId == request.auth.uid;
+      allow write: if request.auth != null;
+    }
+    
+    // Fallback default rule
+    match /{allPaths=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}

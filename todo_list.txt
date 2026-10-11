@@ -1,0 +1,147 @@
+
+
+APP CONCEPT
+
+A Hub = private group (similar to Discord server)
+
+Users may belong to multiple hubs
+
+
+
+AUTHENTICATION 
+
+Implement login & signup using:
+
+Email & Password
+
+Google (optional if configured easily)
+
+Other providers (GitHub, Discord, X, Snapchat, Instagram) should be:
+
+Shown in UI
+
+
+
+HUB FEATURES
+
+Each Hub should include:
+
+Member list
+
+Simple roles (Admin / Member)
+
+Text chat (Firebase Firestore)
+
+Voice & video:
+
+UI only 
+
+
+
+DIGITAL FRIENDSHIP FEATURES
+
+Food preferences (Zomato/Swiggy style)
+
+Reading list (Kindle style)
+
+Movies watched (Letterboxd style)
+
+Games being played (Discord style)
+
+These are read-only insight cards, not real integrations.
+
+
+
+BUILT-IN UTILITIES
+
+Implement simple versions of:
+
+Shared Calendar
+
+Add / view events per hub
+
+Budget Splitter
+
+Enter amount
+
+Split equally among members
+
+Store data locally or in Firestore (free tier).
+
+MAP & PRESENCE (SIMPLIFIED)
+
+Show a static or mock map view
+
+Display approximate friend locations using dummy coordinates
+
+Include privacy toggle UI (no real tracking)
+
+VANISH MODE (SIMPLIFIED FOR FREE TIER)
+
+Implement a Swipe Down & Hold “Vanish Mode”:
+
+Clears local state
+
+Uses temporary in-memory data only
+
+No persistent storage during session
+
+Resets data when mode exits
+
+Explain in comments how this could evolve into ephemeral backend sessions later.
+
+UI / UX
+
+Black background, white foreground
+
+Minimal, modern UI
+
+Smooth animations (basic)
+
+Bottom navigation:
+
+Hubs
+
+Map
+
+Calendar
+
+Insights
+
+Profile
+
+ARCHITECTURE
+
+Separate folders:
+
+models
+
+services
+
+screens
+
+widgets
+
+Use Provider or Riverpod (simple setup)
+
+Clean, readable code
+
+OUTPUT REQUIREMENTS
+
+Fully runnable Flutter app
+
+Works within Replit Free Tier
+
+Mock data clearly labeled
+
+README explaining:
+
+App vision
+
+Current limitations
+
+Upgrade path to paid infrastructure
+
+FINAL OBJECTIVE
+
+Build comms as a proof-of-concept for a privacy-first, hub-based friendship platform that can later scale into a full product.

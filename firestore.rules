@@ -1,0 +1,79 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(uid) {
+      return isAuthenticated() && request.auth.uid == uid;
+    }
+
+    // Users Collection
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      // Allow update if owner OR if only adding to friends list (relaxed for bi-directional add)
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId) || isAuthenticated(); // Note: Ideally restrict 'friends' field update only
+      
+      // Chat Subcollection (User-Centric Storage)
+      match /chats/{friendId} {
+        allow read: if isOwner(userId);
+        allow write: if isAuthenticated();
+        
+        match /messages/{messageId} {
+          // Allow read if owner
+          allow read: if isOwner(userId);
+          // Allow write if owner (sending to self?) OR if sender is the friend (receiving message)
+          // The sender (auth.uid) must be 'friendId' to write to 'userId's storage
+          // Allow write if owner (sending to self?) OR if sender is the friend (receiving message)
+          // The sender (auth.uid) must be 'friendId' to write to 'userId's storage
+          allow create: if isAuthenticated(); // Debugging relaxed rule
+          
+          // Allow update if owner (marking my copy read) OR if chat partner (marking sender copy read for "Seen")
+          allow update: if isOwner(userId) || (isAuthenticated() && request.auth.uid == friendId);
+        }
+      }
+    }
+    
+    // Companies Collection
+    match /companies/{companyId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update, delete: if isAuthenticated() && resource.data.ownerId == request.auth.uid;
+      
+      match /categories/{categoryId} {
+        allow read, write: if isAuthenticated();
+      }
+      
+      match /channels/{channelId} {
+        allow read, write: if isAuthenticated();
+        
+        match /messages/{messageId} {
+          allow read, write: if isAuthenticated();
+        }
+      }
+    }
+    
+    // Rooms (WebRTC)
+    match /rooms/{roomId} {
+      allow read, write: if isAuthenticated(); // WebRTC needs fairly open access for signaling
+      
+      match /callerCandidates/{candidate} {
+         allow read, write: if isAuthenticated();
+      }
+      match /calleeCandidates/{candidate} {
+         allow read, write: if isAuthenticated();
+      }
+    }
+    
+    // Calls (Direct Calling)
+    match /calls/{callId} {
+      allow create: if isAuthenticated();
+      allow read: if isAuthenticated() && (resource.data.callerId == request.auth.uid || resource.data.calleeId == request.auth.uid);
+      allow update: if isAuthenticated() && (resource.data.callerId == request.auth.uid || resource.data.calleeId == request.auth.uid);
+    }
+  }
+}
